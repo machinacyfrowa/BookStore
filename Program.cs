@@ -1,4 +1,5 @@
 ﻿using BookStore;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 
 //static void Main()
@@ -8,21 +9,24 @@ using System.Net.Http.Headers;
 
 using (var context = new BookStoreContext())
 {
-    context.Database.EnsureDeleted();
+    //context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
     var author = new Author
     {
         Name = "George R.R. Martin",
-        Books = new List<Book>()
+        Books = new List<Book>
+        {
+            new Book { Title = "Game of Thrones" },
+            new Book { Title = "Clash of Kings" }
+        }
+
 
     };
-    Book book = new Book { Title = "Game of Thrones", Author = author };
 
     context.Authors.Add(author);
-    context.Books.Add(book);
     context.SaveChanges();
 
-    var authors = context.Authors.ToList();
+    var authors = context.Authors.Include(a => a.Books).ToList();
     foreach(var a in authors)
     {
         Console.WriteLine("Autor: " + a.Name);
